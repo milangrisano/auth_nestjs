@@ -8,11 +8,14 @@ export class User {
     id: string;
 
     @Column('text')
-    fullName: string;
+    name: string;
+    
+    @Column('text')
+    lastName: string;
 
     @Column('text', {
-         unique: true //!OJO: esto permite que los correos electronicos no se repitan,
-         //! verificar si es conveniente 
+        unique: true //!OJO: esto permite que los correos electronicos no se repitan,
+                     //! verificar si es conveniente, tiene que haber un key que puede ser el telef o email
     })
     email: string;
 
