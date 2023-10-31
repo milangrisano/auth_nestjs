@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
+import { RegisterUserDto } from './dto/register-user.dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -17,10 +17,10 @@ export class AuthService {
         private readonly jwtService: JwtService,
     ) {}
 
-    async create( createUserDto: CreateUserDto){
+    async create( registerUserDto: RegisterUserDto){
         try {
 
-            const { password, ...userData } = createUserDto;
+            const { password, ...userData } = registerUserDto;
 
             const user = this.userRepository.create({
                 ...userData,
@@ -75,4 +75,5 @@ export class AuthService {
         throw new InternalServerErrorException('Please check server log');
         
     }
+    //!OJO: Manejar el error cuando colocan un email duplicado
 }

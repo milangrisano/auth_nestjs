@@ -1,7 +1,8 @@
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { profile } from "console";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 
-@Entity('Users')
+@Entity('users')
 export class User {
 
     @PrimaryGeneratedColumn('uuid')
@@ -10,7 +11,9 @@ export class User {
     @Column('text')
     name: string;
     
-    @Column('text')
+    @Column('text', {
+        name: 'last_name',
+    })
     lastName: string;
 
     @Column('text', {
@@ -26,11 +29,21 @@ export class User {
 
     @Column({
          type: 'bool',
-         default: false
+         default: false,
+         name: 'is_active'
      })
     isActive: boolean;
 
-    @CreateDateColumn()
+    @Column({
+        type: 'boolean',
+        unique: true,
+        name: 'activatio_token'
+    })
+    activationToken: string;
+
+    @CreateDateColumn({
+        name: 'create_on'
+    })
     createOn: Date;
 
 
@@ -39,6 +52,14 @@ export class User {
         default: ['user']
     })
     roles: string[];
+
+
+
+    // @OneToOne(
+    //     () => Profile,
+    //     (profile) => profile.user,
+    // )
+    // profile?: Profile;
 
     @BeforeInsert()
     checkFieldsBeforeInsert() {

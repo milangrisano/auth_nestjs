@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { UserProfileModule } from './user-profile/user-profile.module';
 
 
 
@@ -19,6 +20,7 @@ import { AuthModule } from './auth/auth.module';
       synchronize: true, //! En produccion siempre siempre se coloca en false
     }),
     AuthModule,
+    UserProfileModule,
   ],
 })
 export class AppModule {}
