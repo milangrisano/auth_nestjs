@@ -1,5 +1,5 @@
 import { profile } from "console";
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, Generated, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 
 
 @Entity('users')
@@ -34,11 +34,8 @@ export class User {
      })
     isActive: boolean;
 
-    @Column({
-        type: 'boolean',
-        unique: true,
-        name: 'activatio_token'
-    })
+    @Column()
+    @Generated('uuid')
     activationToken: string;
 
     @CreateDateColumn({

@@ -7,6 +7,7 @@ import * as bcrypt from 'bcrypt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
+import { v4 } from 'uuid';
 
 @Injectable()
 export class AuthService {
@@ -17,12 +18,13 @@ export class AuthService {
         private readonly jwtService: JwtService,
     ) {}
 
-    async create( registerUserDto: RegisterUserDto){
+    async register( registerUserDto: RegisterUserDto){
         try {
 
             const { password, ...userData } = registerUserDto;
 
             const user = this.userRepository.create({
+                // activationToken: Math.floor(100000 + Math.random() * 900000),
                 ...userData,
                 password: bcrypt.hashSync( password, 10 )
             })
