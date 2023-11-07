@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post, Req, SetMetadata, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query, Req, SetMetadata, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { GetUser, Auth, RoleProtected } from './decorators';
 import { LoginUserDto, RegisterUserDto } from './dto';
+import { ActivateUserDto } from './dto/activate-user.dto';
 import { User } from './entities/user.entity';
 import { UserRoleGuard } from './guards/user-role.guard';
 import { ValidRoles } from './interfaces';
@@ -26,8 +27,15 @@ export class AuthController {
     @Auth()
     checkAuthStatus(
         @GetUser() user: User
-
     ){
         return this.authServices.checkAuthStatus( user )
     }
+    
+    
+    @Get('activation-account')
+    findOneInactive( @Query() activateUserDto: ActivateUserDto ){
+        return this.authServices.findOneInactive( activateUserDto);
+    }
+
+    
 }

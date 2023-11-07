@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -8,6 +8,7 @@ import { LoginUserDto } from './dto/login-user.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { v4 } from 'uuid';
+import { ActivateUserDto } from './dto/activate-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -40,6 +41,8 @@ export class AuthService {
         }
     }
 
+    // TODO: CUANDO EL USUARIO ESTE INACTIVO DEBE INFORMARLE QUE LO DEBE ACTIVAR
+    
     async login( loginUserDto: LoginUserDto ){
         
         const { password, email } = loginUserDto;
@@ -56,6 +59,26 @@ export class AuthService {
             ...user,
             token: this.getJwtToken({ id: user.id })
         };
+    }
+
+    async findOneInactive( activateUserDto: ActivateUserDto ){
+        const { id, code } = activateUserDto
+        const user = await this.userRepository.findOneBy({
+            id,
+            isActive: false,
+            activationToken: code
+        });
+            if( !user )
+                throw new NotFoundException('Invalid Code')
+        return {
+            isActive: this.activeUser(user),
+            user,
+        }; 
+    }
+    
+    private activeUser(user: User){
+        user.isActive = true;
+        this.userRepository.save(user);
     }
 
     async checkAuthStatus ( user: User ){

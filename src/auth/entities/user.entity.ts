@@ -34,7 +34,9 @@ export class User {
      })
     isActive: boolean;
 
-    @Column()
+    @Column({
+        name: 'activation_token'
+    })
     @Generated('uuid')
     activationToken: string;
 
