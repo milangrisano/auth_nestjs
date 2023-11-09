@@ -35,9 +35,8 @@ export class User {
     isActive: boolean;
 
     @Column({
-        name: 'activation_token'
+        name: 'ramdon_token',
     })
-    @Generated('uuid')
     activationToken: string;
 
     @CreateDateColumn({
@@ -51,14 +50,6 @@ export class User {
         default: ['user']
     })
     roles: string[];
-
-
-
-    // @OneToOne(
-    //     () => Profile,
-    //     (profile) => profile.user,
-    // )
-    // profile?: Profile;
 
     @BeforeInsert()
     checkFieldsBeforeInsert() {

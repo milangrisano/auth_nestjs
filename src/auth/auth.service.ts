@@ -6,6 +6,8 @@ import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
+import { error } from 'console';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class AuthService {
@@ -24,7 +26,7 @@ export class AuthService {
                 ...userData,
                 password: bcrypt.hashSync( password, 10 )
             })
-
+            user.activationToken = this.generateRandomCode();
             await this.userRepository.save( user )
             delete user.password;
             return {
@@ -64,11 +66,10 @@ export class AuthService {
             activationToken: code
         });
             if( !user )
-                throw new NotFoundException('Invalid Code')
-        return {
-            isActive: this.activeUser(user),
-            //Todo return this message: 'Activated user please log in again' 
-        }; 
+                throw new NotFoundException('User Active')
+        const isActive = this.activeUser(user);
+        const message = 'User is Ativated, please login again' 
+        return { isActive, message }; 
     }
     
     //!Nota:
@@ -82,8 +83,18 @@ export class AuthService {
         const user = await this.userRepository.findOneBy({ email });
             if( !user )
                 throw new NotFoundException('Invalid Email')
-        return 'PLEASE, Check your email registered email, reset code was sent';
+            const message = 'PLEASE, Check your email registered email, reset code was sent';
+            user.activationToken = this.generateRandomCode();
+            await this.userRepository.save(user)
+        return { message }
         //Todo: Enviar el correo electronico con el codigo generado
+    }
+
+    private generateRandomCode(): string {
+        const min = 100000; 
+        const max = 999999; 
+        const randomCode = Math.floor(Math.random() * (max - min + 1)) + min;
+        return randomCode.toString();
     }
     
     private activeUser(user: User){
