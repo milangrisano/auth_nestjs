@@ -8,7 +8,7 @@
 ## Database
 
 1. Clone Repositories
-2. Running
+2. install yarn packages to run project with following command:
 ```
 $ yarn install
 ```

@@ -1,14 +1,11 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { RegisterUserDto } from './dto/register-user.dto';
+import { RegisterUserDto, LoginUserDto, ActivateUserDto, ResetPassword } from './dto';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
-import { LoginUserDto } from './dto/login-user.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtService } from '@nestjs/jwt';
-import { v4 } from 'uuid';
-import { ActivateUserDto } from './dto/activate-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -21,11 +18,9 @@ export class AuthService {
 
     async register( registerUserDto: RegisterUserDto){
         try {
-
             const { password, ...userData } = registerUserDto;
-
             const user = this.userRepository.create({
-                // activationToken: Math.floor(100000 + Math.random() * 900000),
+                // activationToken: Math.floor(100000 + Math.random() * 900000), //Todo: utilizar este codigo de javasript para generar el codigo
                 ...userData,
                 password: bcrypt.hashSync( password, 10 )
             })
@@ -72,8 +67,23 @@ export class AuthService {
                 throw new NotFoundException('Invalid Code')
         return {
             isActive: this.activeUser(user),
-            user,
+            //Todo return this message: 'Activated user please log in again' 
         }; 
+    }
+    
+    //!Nota:
+    //* Se utiliza para encontrar el email de un usuario que quiere resetear su
+    //* contraseña, se le debe generar un codigo aleatorio de 6 digitos para
+    //* coincida con el de la base de datos y despues debe colocarse en null y 
+    //* generarse otro nuevo por seguridad
+
+    async findEmail( resetPassword: ResetPassword ){
+        const { email } = resetPassword
+        const user = await this.userRepository.findOneBy({ email });
+            if( !user )
+                throw new NotFoundException('Invalid Email')
+        return 'PLEASE, Check your email registered email, reset code was sent';
+        //Todo: Enviar el correo electronico con el codigo generado
     }
     
     private activeUser(user: User){
